@@ -10,8 +10,13 @@ public class WordFinder : MonoBehaviour
 
     public Text wordsDisplay;
 
+    public int minWordLength = 4;
+
+    public static string secretWord = "x";
+    public static int secretWordLength = 0;
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         // Load a .txt file from the Resources folder
         TextAsset allWords = Resources.Load("words") as TextAsset;
@@ -21,7 +26,7 @@ public class WordFinder : MonoBehaviour
 
         foreach (string currentWord in words)
         {
-            if(currentWord.Length > 3)
+            if (currentWord.Length > 3)
             {
                 possibleWords.Add(currentWord);
             }
@@ -36,7 +41,7 @@ public class WordFinder : MonoBehaviour
         string wordsFound = "";
         wordsDisplay.text = "";
 
-        foreach(string currentWord in possibleWords)
+        foreach (string currentWord in possibleWords)
         {
             if (currentWord.Contains(inputString))
             {
@@ -47,7 +52,7 @@ public class WordFinder : MonoBehaviour
         wordsFound = wordsFound.Remove(wordsFound.LastIndexOf(','));
         // Display the results to the user
         wordsDisplay.text = wordsFound;
-    } 
+    }
 
 
     public void SearchCharacters(string inputCharacters)
@@ -56,7 +61,7 @@ public class WordFinder : MonoBehaviour
 
         char[] inputCharArray = inputCharacters.ToCharArray();
 
-        foreach(string currentWord in possibleWords)
+        foreach (string currentWord in possibleWords)
         {
             bool containsAllSoFar = true;
 
@@ -69,7 +74,7 @@ public class WordFinder : MonoBehaviour
                 }
             }
 
-            if(!containsAllSoFar)
+            if (!containsAllSoFar)
             {
                 continue; // <---- stop this iteration and continue with the next iteration
             }
@@ -79,5 +84,31 @@ public class WordFinder : MonoBehaviour
         // Update wordsFound to remove evertything including and after the last comma
         wordsFound = wordsFound.Remove(wordsFound.LastIndexOf(','));
         wordsDisplay.text = wordsFound;
+    }
+
+    public string GetRandomWord()
+    {
+        int randomIndex;
+        if (minWordLength > 0)
+        {
+            randomIndex = Random.Range(0, possibleWords.Count);
+
+            // Keep trying to get a word of acceptable length until successful
+            while (possibleWords[randomIndex].Length < minWordLength)
+            {
+                randomIndex = Random.Range(0, possibleWords.Count);
+            }
+            secretWord = possibleWords[randomIndex];
+        } else
+        {
+            throw new System.Exception("Minimum word length must be greater than 0.");
+        }
+        secretWordLength = secretWord.Length;
+        return secretWord;
+    }
+
+    public int GetWordLength()
+    {
+        return secretWordLength;
     }
 }
