@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] public WordFinder wordFinder;
     [SerializeField] public GameObject GOpanel;
     [SerializeField] public Text GOText;
+    [SerializeField] public Text GuessedText;
+
+    public List<char> guessedLetters = new List<char>();
 
     public Text secretWordText;
     public Text infoText;
@@ -67,6 +71,8 @@ public class GameManager : MonoBehaviour
 
         GOpanel.SetActive(false);
         alreadyGuessedLetter = false;
+
+        guessedLetters.Clear();
     }
 
     public void UpdateText()
@@ -99,6 +105,12 @@ public class GameManager : MonoBehaviour
             GOpanel.SetActive(true);
             GOText.text = "You lose!\r\nPlay again?";
         }
+        string guessedString = "";
+        foreach(char c in guessedLetters)
+        {
+            guessedString += c.ToString() + ", ";
+        }
+        GuessedText.text = "Guessed letters:\r\n" + guessedString;
     }
 
     // Takes a guessed letter and returns if it's a correct guess or not
@@ -119,6 +131,23 @@ public class GameManager : MonoBehaviour
                 alreadyGuessedLetter = true;
             }
             i++;
+        }
+
+        // bool for tracking if a letter has already been added to the guessed list
+        bool guessed = false;
+        // Add letter to guessed letters if not already added
+        foreach (char c in guessedLetters)
+        {
+            if (c == letter)
+            {
+                guessed = true;
+                alreadyGuessedLetter = true;
+            }
+        }
+        if (!guessed)
+        {
+            guessedLetters.Add(letter);
+            
         }
         return correctGuess;
     }
